@@ -306,3 +306,77 @@ async def scouting_data_to_csv(interaction: discord.Interaction):
         # Send the file in the Discord message
         embed = discord.Embed(description='Here\'s the report', color=constants.EMBED_COLOUR_QU)
         await interaction.response.send_message(embed=embed, file=discord_file, ephemeral=True)
+
+
+async def get_system_state_interval():
+    """
+    :return: Returns the default interval or the set interval from the database
+    """
+    query = "SELECT * FROM config_data WHERE config_setting = 'system_state_interval'"
+    spyplane_db.execute(query)
+    result = spyplane_db.fetchone()
+
+    if result is None:
+        try:
+            await spyplane_db_lock.acquire()
+            spyplane_db.execute(f"INSERT INTO config_data (config_setting, config_value) VALUES "
+                                f"('system_state_interval', {str(constants.default_scout_interval())})")
+            spyplane_conn.commit()
+            print('Inserted default scout interval into config db')
+            return constants.default_system_state_interval()
+
+        finally:
+            spyplane_db_lock.release()
+
+    else:
+        config = int(ConfigData(result).config_value)
+        return config
+
+
+async def get_monitoring_channel_id():
+    """
+    :return: Returns the default interval or the set interval from the database
+    """
+    query = "SELECT * FROM config_data WHERE config_setting = 'monitoring_channel_id'"
+    spyplane_db.execute(query)
+    result = spyplane_db.fetchone()
+
+    if result is None:
+        try:
+            await spyplane_db_lock.acquire()
+            spyplane_db.execute(f"INSERT INTO config_data (config_setting, config_value) VALUES "
+                                f"('monitoring_channel_id', {str(constants.channel_monitoring())})")
+            spyplane_conn.commit()
+            print('Inserted default scout interval into config db')
+            return constants.channel_monitoring()
+
+        finally:
+            spyplane_db_lock.release()
+
+    else:
+        config = int(ConfigData(result).config_value)
+        return config
+
+async def get_scout_emoji_id():
+    """
+        :return: Returns the default emoji id or the set emoji id from the database
+        """
+    query = "SELECT * FROM config_data WHERE config_setting = 'scout_emoji_id'"
+    spyplane_db.execute(query)
+    result = spyplane_db.fetchone()
+
+    if result is None:
+        try:
+            await spyplane_db_lock.acquire()
+            spyplane_db.execute(f"INSERT INTO config_data (config_setting, config_value) VALUES "
+                                f"('scout_emoji_id', {str(constants.emoji_assassin())})")
+            spyplane_conn.commit()
+            print('Inserted default emoji id into config db')
+            return constants.emoji_assassin()
+
+        finally:
+            spyplane_db_lock.release()
+
+    else:
+        config = int(ConfigData(result).config_value)
+        return config

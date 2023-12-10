@@ -7,7 +7,7 @@ import discord
 from ptn.spyplane.bot import bot
 # import local constants
 from ptn.spyplane.constants import channel_scout, emoji_assassin, role_scout, bot_guild
-from ptn.spyplane.database.database import insert_scout_log, get_scout_interval
+from ptn.spyplane.database.database import insert_scout_log, get_scout_interval, get_scout_emoji_id
 from ptn.spyplane.modules.ErrorHandler import CustomError
 from ptn.spyplane.modules.Helpers import clear_scout_messages
 from ptn.spyplane.modules.Sheets import update_row, get_systems, post_list_by_priority
@@ -20,7 +20,7 @@ async def post_scouting():
     # Get scouting channel
     guild = bot.get_guild(bot_guild())
     scout_channel = guild.get_channel(channel_scout())
-    emoji = guild.get_emoji(emoji_assassin())
+    emoji = guild.get_emoji(await get_scout_emoji_id())
     scout_role = guild.get_role(role_scout())
 
     # Get systems and priorities
@@ -64,6 +64,7 @@ async def delayed_scout_update():
     await asyncio.sleep(scout_interval)  # sleep an amount of time
     await pending_message.delete()
     await post_scouting()
+    print('Scouting post done.')
 
 
 async def log_scout(system_name, member_name, member_id):

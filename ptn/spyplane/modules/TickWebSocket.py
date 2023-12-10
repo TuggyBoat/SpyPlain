@@ -1,8 +1,10 @@
+import asyncio
 import datetime
 
 import socketio
 
 from ptn.spyplane.database.database import get_last_tick, insert_tick
+from ptn.spyplane.modules.SystemFactionStatesReporter import delayed_system_state_update
 from ptn.spyplane.modules.SystemScouter import delayed_scout_update
 
 # socket
@@ -38,6 +40,7 @@ def to_datetime(datetime_string: str):
 
 
 async def check_tick(data: str):
+    print('Checking tick for change...')
     # convert tick to time.time() timestamp
     timestamp = int(to_datetime(data))
 
@@ -53,6 +56,7 @@ async def check_tick(data: str):
         print('Populating tick table with first tick')
         await insert_tick(timestamp)
         await delayed_scout_update()
+        await delayed_system_state_update()
 
     # if the tick is the same (happens when restarting/reconnecting)
     elif last_tick == timestamp:
@@ -63,3 +67,5 @@ async def check_tick(data: str):
         if not last_tick:
             print('New tick detected')
             await insert_tick(timestamp)
+            await delayed_scout_update()
+            await delayed_system_state_update()
