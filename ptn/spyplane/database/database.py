@@ -9,9 +9,15 @@ Error handling: errors originating from Discord commands should be handled in th
 
 # libraries
 import asyncio
+import csv
 import enum
+import io
 import sqlite3
 import os
+import tempfile
+from io import BytesIO
+
+import discord
 
 # local classes
 from ptn.spyplane.classes.ConfigData import ConfigData
@@ -40,7 +46,7 @@ build_directory_tree_on_startup()  # build directory structure
 
 
 # build or modify database as needed on startup
-def build_database_on_startup():
+async def build_database_on_startup():
     print("Building database...")
     try:
         database_table_map = {
@@ -58,11 +64,14 @@ def build_database_on_startup():
     except Exception as e:
         print(f"Error building database: {e}")
 
+    interval = await get_scout_interval()
+    print(f'Interval set to: {interval / 3600} hours')
+
 
 # defining infraction table for database creation
 config_table_create = '''
     CREATE TABLE config_data(
-        config_setting TEXT NOT NULL,
+        config_setting TEXT NOT NULL UNIQUE,
         config_value TEXT NOT NULL
     )
     '''
@@ -172,6 +181,11 @@ async def insert_scout_log(system_name, username, user_id, timestamp):
 
 
 async def insert_tick(tick_time: int):
+    """
+    Inserts a tick into the database given a timestamp
+    :param tick_time:
+    :return: database entry id
+    """
     try:
         await spyplane_db_lock.acquire()
 
@@ -194,7 +208,7 @@ async def get_last_tick():
     """
     Get the last inserted tick from database
 
-    :return: dict
+    :return: list[TickData]
     """
     query = "SELECT * FROM tick_times ORDER BY entry_id DESC LIMIT 1"
     spyplane_db.execute(query)
@@ -202,3 +216,93 @@ async def get_last_tick():
     tick_data = [TickData(tick) for tick in spyplane_db.fetchall()]
 
     return tick_data
+
+
+async def get_scout_interval():
+    """
+    :return: Returns the default interval or the set interval from the database
+    """
+    query = "SELECT * FROM config_data WHERE config_setting = 'scout_interval'"
+    spyplane_db.execute(query)
+    result = spyplane_db.fetchone()
+
+    if result is None:
+        try:
+            await spyplane_db_lock.acquire()
+            spyplane_db.execute(f"INSERT INTO config_data (config_setting, config_value) VALUES "
+                                f"('scout_interval', {str(constants.default_scout_interval())})")
+            spyplane_conn.commit()
+            print('Inserted default scout interval into config db')
+            return constants.default_scout_interval()
+
+        finally:
+            spyplane_db_lock.release()
+
+    else:
+        config = int(ConfigData(result).config_value)
+        return config
+
+
+async def get_all_configs():
+    """
+    Get every config from the database
+    :return: list[ConfigData]
+    """
+    spyplane_db.execute("SELECT * FROM config_data")
+    config_data = [ConfigData(config) for config in spyplane_db.fetchall()]
+    return config_data
+
+
+async def update_config(config_setting: str, config_value: str):
+    """
+    Updates the config given setting and value
+    :param config_setting:
+    :param config_value:
+    """
+    try:
+        await spyplane_db_lock.acquire()
+
+        update_sql = '''
+            UPDATE config_data SET config_value = ? WHERE config_setting = ?
+        '''
+
+        spyplane_db.execute(update_sql, (config_value, config_setting))
+        spyplane_conn.commit()
+    finally:
+        spyplane_db_lock.release()
+
+
+async def find_config(config_setting: str):
+    """
+    Get config from database
+    :param config_setting:
+    :return: returns result from query
+    """
+    query = f"SELECT * FROM config_data WHERE config_setting = '{config_setting}'"
+    spyplane_db.execute(query)
+    result = spyplane_db.fetchone()
+    return ConfigData(result)
+
+
+async def scouting_data_to_csv(interaction: discord.Interaction):
+    spyplane_db.execute("SELECT * FROM scout_data")
+    rows = spyplane_db.fetchall()
+
+    # First, use StringIO to write CSV data as text
+    with io.StringIO() as text_output:
+        csv_writer = csv.writer(text_output)
+        column_headers = [description[0] for description in spyplane_db.description]
+        csv_writer.writerow(column_headers)
+        csv_writer.writerows(rows)
+
+        # Get the string from StringIO and encode it to bytes
+        csv_data = text_output.getvalue().encode('utf-8')
+
+    # Now, use BytesIO with the encoded data
+    with io.BytesIO(csv_data) as binary_output:
+        # Create a discord File object from the binary buffer
+        discord_file = discord.File(fp=binary_output, filename='report.csv')
+
+        # Send the file in the Discord message
+        embed = discord.Embed(description='Here\'s the report', color=constants.EMBED_COLOUR_QU)
+        await interaction.response.send_message(embed=embed, file=discord_file, ephemeral=True)

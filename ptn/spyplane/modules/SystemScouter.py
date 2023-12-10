@@ -7,10 +7,10 @@ import discord
 from ptn.spyplane.bot import bot
 # import local constants
 from ptn.spyplane.constants import channel_scout, emoji_assassin, role_scout, bot_guild
-from ptn.spyplane.database.database import insert_scout_log
+from ptn.spyplane.database.database import insert_scout_log, get_scout_interval
 from ptn.spyplane.modules.ErrorHandler import CustomError
 from ptn.spyplane.modules.Helpers import clear_scout_messages
-from ptn.spyplane.modules.Sheets import update_row, get_systems
+from ptn.spyplane.modules.Sheets import update_row, get_systems, post_list_by_priority
 
 
 async def post_scouting():
@@ -24,12 +24,15 @@ async def post_scouting():
     scout_role = guild.get_role(role_scout())
 
     # Get systems and priorities
-    systems = get_systems()
+    systems = await post_list_by_priority()
+
+    # clear channel
+    await clear_scout_messages()
 
     current_priority = '1'
     await scout_channel.send('## Primary List')
     for system in systems:
-        print(system[1])
+        # print(system[1]) - debug for system priorities
         # Check for transition in priority and send a message accordingly
         if system[1] != current_priority:
             if current_priority == '1':
@@ -47,16 +50,29 @@ async def post_scouting():
 
 
 async def delayed_scout_update():
+    """
+    Delay scouting for a set amount of time
+    """
     guild = bot.get_guild(bot_guild())
     scout_channel = guild.get_channel(channel_scout())
+    scout_interval = await get_scout_interval()
+    print(f"Scout interval: {scout_interval}")
+
+    # clear channel
     await clear_scout_messages()
     pending_message = await scout_channel.send('Spy Plane will take off in a certain amount of time')
+    await asyncio.sleep(scout_interval)  # sleep an amount of time
     await pending_message.delete()
-    await asyncio.sleep(30)  # sleep an amount of time
     await post_scouting()
 
 
 async def log_scout(system_name, member_name, member_id):
+    """
+    :param system_name:
+    :param member_name:
+    :param member_id:
+    :return: int or False
+    """
     print(f'Logging scout for {system_name} by {member_name}')
     try:
         # get timestamp format for sheets
@@ -65,7 +81,7 @@ async def log_scout(system_name, member_name, member_id):
         formatted_time = dt_object.strftime('%d/%m/%Y %H:%M:%S')
 
         # update sheets
-        update_row(row_name=system_name, usernmame=member_name, user_id=member_id, timestamp=formatted_time)
+        update_row(row_name=system_name, username=member_name, user_id=member_id, timestamp=formatted_time)
 
         # log to database
         return await insert_scout_log(system_name=system_name, username=member_name, user_id=member_id,

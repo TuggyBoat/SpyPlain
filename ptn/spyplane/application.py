@@ -34,16 +34,22 @@ def run():
 
 async def modbot():
     async with bot:
-        build_database_on_startup()
+        await build_database_on_startup()
         await bot.add_cog(ModCommands(bot))
         await bot.add_cog(DatabaseInteraction(bot))
         await bot.add_cog(SpyPlaneCommands(bot))
         await bot.add_cog(Listeners(bot))
         await bot.start(TOKEN)
 
+async def on_bot_ready():
+    print('Bot is ready!')
+    await start_client()  # Start the socket client when the bot is ready
+
+
 
 if __name__ == '__main__':
     """
     If running via `python ptn/spyplane/application.py
     """
+    bot.add_listener(on_bot_ready, 'on_ready')
     run()

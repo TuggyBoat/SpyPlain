@@ -36,6 +36,25 @@ def get_faction_systems():
         print(f"Failed to retrieve data: {response.status_code}")
 
 
+def get_ebgs_system(system: str):
+    api_endpoint = "https://elitebgs.app/api/ebgs/v5/systems"
+    params = {'name': system.strip()}
+
+    # GET request
+    response = requests.get(api_endpoint, params=params)
+
+    # Check if request was successful
+    if response.status_code == 200:
+        data = response.json()
+        update_time = [doc['updated_at'] for doc in data['docs']][0]
+        dt_obj = datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+        timestamp = dt_obj.timestamp()
+        return timestamp
+
+    else:
+        return False
+
+
 def fetch_current_tick() -> int:
     hdr = {
         'User-Agent': 'curl/7.68.0',
@@ -54,6 +73,7 @@ def time_to_timestamp(date_str):
     datetime_obj = datetime.strptime(date_str, date_format)
 
     return int(time.mktime(datetime_obj.timetuple()))
+
 
 async def clear_scout_messages():
     guild = bot.get_guild(bot_guild())

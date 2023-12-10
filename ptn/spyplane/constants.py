@@ -46,10 +46,11 @@ PROD_CHANNEL_SCOUT = 878536094503829524
 PROD_ROLE_COUNCIL = 800091021852803072  # PTN Council role
 PROD_ROLE_MOD = 813814494563401780  # PTN Mod role
 PROD_ROLE_OP = 948206870491959317  # PTN Operator Role
-PROD_ROLE_SCOUT = 938507320214839306 # PTN Scout Role
-PROD_ROLE_SUPPORTER = 879491967157944381 # PTN Faction Supporter Role
-PROD_EMOJI_TARGET = 806498760586035200 # PTN Assassin Emoji
-
+PROD_ROLE_SCOUT = 938507320214839306  # PTN Scout Role
+PROD_ROLE_SUPPORTER = 879491967157944381  # PTN Faction Supporter Role
+PROD_EMOJI_TARGET = 806498760586035200  # PTN Assassin Emoji
+PROD_DEFAULT_SCOUT_INTERVAL = 14400  # PTN Post Delay in seconds
+PROD_DEFAULT_STATES_INTERVAL = 43200  # PTN EBGS Faction States Delay in seconds
 
 # Testing variables
 TEST_DISCORD_GUILD = 682302487658496057  # PANTS server ID
@@ -61,6 +62,8 @@ TEST_ROLE_OP = 1166199159028723793  # PANTS Operator Role
 TEST_ROLE_SUPPORTER = 1182909095322341397
 TEST_ROLE_SCOUT = 1182909858148790333
 TEST_EMOJI_TARGET = 1006810326953635891
+TEST_DEFAULT_SCOUT_INTERVAL = 30  # PTN Post Delay in seconds
+TEST_DEFAULT_STATES_INTERVAL = 60  # PTN EBGS Faction States Delay in seconds
 
 # Embed colours
 EMBED_COLOUR_ERROR = 0x800000  # dark red
@@ -90,6 +93,7 @@ guild_obj = discord.Object(bot_guild())
 def channel_botspam():
     return PROD_CHANNEL_BOTSPAM if _production else TEST_CHANNEL_BOTSPAM
 
+
 def channel_scout():
     return PROD_CHANNEL_SCOUT if _production else TEST_CHANNEL_SCOUT
 
@@ -97,17 +101,24 @@ def channel_scout():
 def role_council():
     return PROD_ROLE_COUNCIL if _production else TEST_ROLE_COUNCIL
 
+
 def role_mod():
     return PROD_ROLE_MOD if _production else TEST_ROLE_MOD
+
 
 def role_supporter():
     return PROD_ROLE_SUPPORTER if _production else TEST_ROLE_SUPPORTER
 
+
 def role_scout():
     return PROD_ROLE_SCOUT if _production else TEST_ROLE_SCOUT
 
+
 def emoji_assassin():
     return PROD_EMOJI_TARGET if _production else TEST_EMOJI_TARGET
+
+def default_scout_interval():
+    return PROD_DEFAULT_SCOUT_INTERVAL if _production else TEST_DEFAULT_SCOUT_INTERVAL
 
 
 any_elevated_role = [role_council(), role_mod()]
