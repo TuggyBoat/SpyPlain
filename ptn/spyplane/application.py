@@ -41,10 +41,13 @@ async def modbot():
         await bot.add_cog(Listeners(bot))
         await bot.start(TOKEN)
 
+
 async def on_bot_ready():
+    """
+    Runs socket client when the bot is ready
+    """
     print('Bot is ready!')
     await start_client()  # Start the socket client when the bot is ready
-
 
 
 if __name__ == '__main__':

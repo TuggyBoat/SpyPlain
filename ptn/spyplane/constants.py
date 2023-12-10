@@ -43,6 +43,7 @@ PTN_FACTION_ID = '612402938c6309f8d8558331'
 PROD_DISCORD_GUILD = 800080948716503040  # PTN server ID
 PROD_CHANNEL_BOTSPAM = 801258393205604372  # PTN bot-spam channel
 PROD_CHANNEL_SCOUT = 878536094503829524
+PROD_CHANNEL_MONITORING = 829215577527812096
 PROD_ROLE_COUNCIL = 800091021852803072  # PTN Council role
 PROD_ROLE_MOD = 813814494563401780  # PTN Mod role
 PROD_ROLE_OP = 948206870491959317  # PTN Operator Role
@@ -56,6 +57,7 @@ PROD_DEFAULT_STATES_INTERVAL = 43200  # PTN EBGS Faction States Delay in seconds
 TEST_DISCORD_GUILD = 682302487658496057  # PANTS server ID
 TEST_CHANNEL_BOTSPAM = 1182782400141467718  # PANTS bot spam channel
 TEST_CHANNEL_SCOUT = 1182773459273666720
+TEST_CHANNEL_MONITORING = 1183527106039267438
 TEST_ROLE_COUNCIL = 1166198689388314714  # PANTS Council role
 TEST_ROLE_MOD = 1166198849975627866  # PANTS Mod role
 TEST_ROLE_OP = 1166199159028723793  # PANTS Operator Role
@@ -97,6 +99,8 @@ def channel_botspam():
 def channel_scout():
     return PROD_CHANNEL_SCOUT if _production else TEST_CHANNEL_SCOUT
 
+def channel_monitoring():
+    return PROD_CHANNEL_MONITORING if _production else TEST_CHANNEL_MONITORING
 
 def role_council():
     return PROD_ROLE_COUNCIL if _production else TEST_ROLE_COUNCIL
@@ -113,6 +117,9 @@ def role_supporter():
 def role_scout():
     return PROD_ROLE_SCOUT if _production else TEST_ROLE_SCOUT
 
+def role_operative():
+    return PROD_ROLE_OP if _production else TEST_ROLE_OP
+
 
 def emoji_assassin():
     return PROD_EMOJI_TARGET if _production else TEST_EMOJI_TARGET
@@ -120,5 +127,9 @@ def emoji_assassin():
 def default_scout_interval():
     return PROD_DEFAULT_SCOUT_INTERVAL if _production else TEST_DEFAULT_SCOUT_INTERVAL
 
+def default_system_state_interval():
+    return PROD_DEFAULT_STATES_INTERVAL if _production else TEST_DEFAULT_STATES_INTERVAL
+
 
 any_elevated_role = [role_council(), role_mod()]
+op_plus = [*any_elevated_role, role_operative()]

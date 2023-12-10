@@ -1,4 +1,38 @@
 # Changelog
+## Version 1.0.0 - Fully Functional Version
+### application.py
+- updated docstring
+
+### constants.py
+- added monitoring channel ids
+- added function for operative role and op_plus list 
+
+### database.py
+- added `get_system_state_interval` which gets the system state interval report from the database
+- added `get_monitoring_channel_id` which does the same as above
+- added `get_scout_emoji_id` which does the same as above
+
+### Helpers.py
+- removed unused `get_faction_systems` function
+- added check role helpers for command restriction
+
+### SpyPlaneCommands.py
+- added `check_roles` verification to commands
+- commented out debug command
+- added `spy_plane_system_states_report` for reporting faction states in scouting systems
+
+### Created SystemFactionStatesReporter.py
+- Adds functions for creating the report embed for faction states in scouting systems
+
+### SystemScouter.py
+- updated `post_scouting` to get emoji id from database
+
+### TickWebSocket.py
+- added logging print to `check_tick`
+- added faction state reporting to initial startup sequence
+- added scout posting and state posting to new tick detection
+
+
 ## Version 0.2.0
 ### application.py
 - added `on_bot_ready` to start socket client and fix overwrite issue with on_ready calls

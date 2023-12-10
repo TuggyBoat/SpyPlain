@@ -30,7 +30,7 @@ class ButtonRoleBot(commands.Bot):
         intents = discord.Intents.all()
         intents.message_content = True
 
-        super().__init__(command_prefix=commands.when_mentioned_or('🎢'), intents=intents)
+        super().__init__(command_prefix=commands.when_mentioned_or('✈️'), intents=intents)
 
     async def on_ready(self):
         try:
@@ -41,8 +41,8 @@ class ButtonRoleBot(commands.Bot):
             global spamchannel
             spamchannel = bot.get_channel(channel_botspam())
             embed = discord.Embed(
-                title="🟢 MODBOT ONLINE",
-                description=f"📷<@{bot.user.id}> connected, version **{__version__}**.",
+                title="🟢 SPYPLANE ONLINE",
+                description=f"🛫<@{bot.user.id}> connected, version **{__version__}**.",
                 color=EMBED_COLOUR_OK
             )
             await spamchannel.send(embed=embed)
