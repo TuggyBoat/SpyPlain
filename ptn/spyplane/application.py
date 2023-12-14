@@ -29,6 +29,7 @@ print(f'PTN ModBot is connecting against production: {_production}.')
 
 
 def run():
+    bot.add_listener(on_bot_ready, 'on_ready')
     asyncio.run(modbot())
 
 
@@ -54,5 +55,4 @@ if __name__ == '__main__':
     """
     If running via `python ptn/spyplane/application.py
     """
-    bot.add_listener(on_bot_ready, 'on_ready')
     run()

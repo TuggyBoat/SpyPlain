@@ -7,7 +7,7 @@ import discord
 from ptn.spyplane.bot import bot
 # import local constants
 from ptn.spyplane.constants import channel_scout, emoji_assassin, role_scout, bot_guild
-from ptn.spyplane.database.database import insert_scout_log, get_scout_interval, get_scout_emoji_id
+from ptn.spyplane.database.database import insert_scout_log, get_scout_interval, get_scout_emoji_id, get_last_tick
 from ptn.spyplane.modules.ErrorHandler import CustomError
 from ptn.spyplane.modules.Helpers import clear_scout_messages
 from ptn.spyplane.modules.Sheets import update_row, get_systems, post_list_by_priority
@@ -53,16 +53,30 @@ async def delayed_scout_update():
     """
     Delay scouting for a set amount of time
     """
+    # constants
+    current_time = int(time.time())
     guild = bot.get_guild(bot_guild())
     scout_channel = guild.get_channel(channel_scout())
     scout_interval = await get_scout_interval()
+
+    # get last tick
+    last_tick = await get_last_tick()
+    last_tick = last_tick[0].tick_time
+
+    # if we are past the tick scout time
+    time_at_scout = last_tick + scout_interval
+    past_scout_time = time_at_scout <= current_time
+    time_until_scout = time_at_scout - current_time
     print(f"Scout interval: {scout_interval}")
 
     # clear channel
     await clear_scout_messages()
-    pending_message = await scout_channel.send('Spy Plane will take off in a certain amount of time')
-    await asyncio.sleep(scout_interval)  # sleep an amount of time
-    await pending_message.delete()
+
+    # if we are not past scout time
+    if not past_scout_time:
+        pending_message = await scout_channel.send(f'Spy Plane will take off <t:{time_at_scout}:R>')
+        await asyncio.sleep(time_until_scout)  # sleep an amount of time
+        await pending_message.delete()
     await post_scouting()
     print('Scouting post done.')
 

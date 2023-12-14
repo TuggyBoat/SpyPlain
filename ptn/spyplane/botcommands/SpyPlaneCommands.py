@@ -8,7 +8,7 @@ from discord.ext import commands
 from ptn.spyplane.database.database import get_all_configs, update_config, find_config, scouting_data_to_csv
 from ptn.spyplane.modules.ErrorHandler import on_app_command_error
 from ptn.spyplane.modules.Helpers import check_roles
-from ptn.spyplane.modules.Sheets import values, sheet_dataframe, post_list_by_priority
+from ptn.spyplane.modules.Sheets import values, sheet_dataframe, post_list_by_priority, get_systems
 from ptn.spyplane.modules.SystemFactionStatesReporter import create_faction_states_embed, post_system_state_report
 from ptn.spyplane.modules.SystemScouter import post_scouting
 import ptn.spyplane.constants as constants
@@ -81,5 +81,5 @@ class SpyPlaneCommands(commands.Cog):
     @check_roles(constants.op_plus)
     async def spy_plane_system_states_report(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True, thinking=True)
-        embed = await create_faction_states_embed()
+        embed = await create_faction_states_embed(get_systems())
         await interaction.followup.send(embed=embed)

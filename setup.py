@@ -29,7 +29,8 @@ setup(
         'ptn.spyplane', # core
         'ptn.spyplane.botcommands', # user interactions
         'ptn.spyplane.database', # database
-        'ptn.spyplane.modules' # modules for various functions
+        'ptn.spyplane.modules', # modules for various functions
+        'ptn.spyplane.classes'
         ],
     description='Pilots Trade Network Faction Support Bot',
     long_description=long_description,

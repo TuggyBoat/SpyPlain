@@ -86,6 +86,7 @@ TEST_DEFAULT_STATES_INTERVAL = 60  # PTN EBGS Faction States Delay in seconds
 EMBED_COLOUR_ERROR = 0x800000  # dark red
 EMBED_COLOUR_QU = 0x00d9ff  # que?
 EMBED_COLOUR_OK = 0x80ff80  # we're good here thanks, how are you?
+EMBED_COLOR_AGENT = 0xeb6a5c # redish
 
 # random gifs and images
 error_gifs = [
