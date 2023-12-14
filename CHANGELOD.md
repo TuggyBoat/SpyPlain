@@ -1,4 +1,31 @@
 # Changelog
+## Version 1.0.1
+### application.py
+- moved listener call to run definition for docker compatibility
+
+### constants.py
+- added agent color for embed styling
+
+### setup.py
+- fixed classes not being listed in packages
+
+### SpyPlaneCommands.py
+- spy_plane_system_states_report now calls get_systems() for embed creation
+
+### SystemFactionStatesReporter.py
+- added retreating factions to report
+- change create_faction_states_embed to allow for generic list support
+- changed delayed_system_state_update to account for late tick detections and dynamically calculate time needed between tick and report
+
+### SystemScouter.py
+- changed delayed_scout_update to account for late tick detections and dynamically calculate time needed between tick and report
+
+### TickWebSocket.py
+- added check to avoid scouting and updates if tick is within 12 hours of the last
+
+### Other
+- created Dockerfile
+
 ## Version 1.0.0 - Fully Functional Version
 ### application.py
 - updated docstring
