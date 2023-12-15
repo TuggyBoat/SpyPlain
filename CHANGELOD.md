@@ -1,4 +1,21 @@
 # Changelog
+## Update 1.0.2
+### database.py
+- added 'scout_system_data' for possible future use and 'update_system' for updating the table
+
+### Helpers.py
+- updated `get_ebgs_systems` to allow for bulk api fetching, def is unused as of now
+
+### ScoutData.py
+- fixed incorrect labeling of variables
+
+### Created ScoutSystemData.py
+
+### Sheets.py
+- updated system posting to reduce amount of systems posted in both Secondary and Tertiary lists
+
+### SystemScouter.py
+- added fallback for NoneType return on call for emoji from database
 ## Version 1.0.1
 ### application.py
 - moved listener call to run definition for docker compatibility

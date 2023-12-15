@@ -1,9 +1,9 @@
-class ScoutData:
+class ScoutSystemData:
     def __init__(self, info_dict=None):
         """
-        Class represents a scout object as returned from the database
+        Class represents a scout system object as returned from the database
 
-        entry_id, system_name, username, user_id, timestamp
+        entry_id, system_name, last_update, priority
 
         :param info_dict:
         """
@@ -16,9 +16,8 @@ class ScoutData:
 
         self.entry_id = info_dict.get('entry_id', None)
         self.system_name = info_dict.get('system_name', None)
-        self.username = info_dict.get('username', None)
-        self.user_id = info_dict.get('user_id', None)
-        self.timestamp = info_dict.get('timestamp', None)
+        self.last_update = info_dict.get('last_update', None)
+        self.priority = info_dict.get('priority')
 
     def to_dictionary(self):
         """
@@ -39,8 +38,7 @@ class ScoutData:
 
         :rtype: str
         """
-        return 'TickData: entry_id:{0.entry_id} system_name:{0.system_name} username:{0.username} user_id:{0.user_id}' \
-               'timestamp"{0.timestamp}'.format(self)
+        return 'ScoutSystemData: entry_id:{0.entry_id} system_name:{0.system_name} last_update:{0.last_update} priority:{0.priority}'.format(self)
 
     def __bool__(self):
         """

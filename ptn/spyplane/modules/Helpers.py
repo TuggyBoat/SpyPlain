@@ -21,9 +21,15 @@ Helpers for main functions
 """
 
 
-def get_ebgs_system(system: str):
+def get_ebgs_systems(systems: list):
+    """
+    :param systems: list
+    :return: dict
+    """
     api_endpoint = "https://elitebgs.app/api/ebgs/v5/systems"
-    params = {'name': system.strip()}
+
+    # Construct the parameters dynamically
+    params = {f'name[{index}]': system.strip() for index, system in enumerate(systems)}
 
     # GET request
     response = requests.get(api_endpoint, params=params)
@@ -31,12 +37,18 @@ def get_ebgs_system(system: str):
     # Check if request was successful
     if response.status_code == 200:
         data = response.json()
-        update_time = [doc['updated_at'] for doc in data['docs']][0]
-        dt_obj = datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-        timestamp = dt_obj.timestamp()
-        return timestamp
+        timestamps = {}
 
+        for doc in data['docs']:
+            system_name = doc['name']
+            update_time = doc['updated_at']
+            dt_obj = datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+            timestamp = dt_obj.timestamp()
+            timestamps[system_name] = timestamp
+
+        return timestamps
     else:
+        # Handle errors or return False or an empty dictionary
         return False
 
 

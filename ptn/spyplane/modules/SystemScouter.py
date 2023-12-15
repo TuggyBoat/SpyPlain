@@ -20,7 +20,10 @@ async def post_scouting():
     # Get scouting channel
     guild = bot.get_guild(bot_guild())
     scout_channel = guild.get_channel(channel_scout())
+
     emoji = guild.get_emoji(await get_scout_emoji_id())
+    if not emoji:
+        emoji = guild.get_emoji(emoji_assassin())
     scout_role = guild.get_role(role_scout())
 
     # Get systems and priorities
@@ -96,7 +99,7 @@ async def log_scout(system_name, member_name, member_id):
         formatted_time = dt_object.strftime('%d/%m/%Y %H:%M:%S')
 
         # update sheets
-        update_row(row_name=system_name, username=member_name, user_id=member_id, timestamp=formatted_time)
+        await update_row(row_name=system_name, username=member_name, user_id=member_id, timestamp=formatted_time)
 
         # log to database
         return await insert_scout_log(system_name=system_name, username=member_name, user_id=member_id,
